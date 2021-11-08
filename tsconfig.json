@@ -1,0 +1,24 @@
+{
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "compilerOptions": {
+    "target": "es2018",
+    "moduleResolution": "node",
+    "outDir": "dist/",
+    "declaration": false,
+    "rootDir": "src",
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "sourceMap": false,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "typeRoots": ["./node_modules/@types", "./@types"],
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "lib", "**/*.spec.ts"],
+  "include": ["src", "./@types"]
+}

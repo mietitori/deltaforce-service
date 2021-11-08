@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum user_level {
+  ADMIN
+  USER
+}
+
+model app_configuration {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  siteName    String   @db.VarChar(300)
+  siteLogoUrl String   @db.VarChar(300)
+}
+
+model users {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  email       String       @db.VarChar(300)
+  passwd      String       @db.VarChar(300)
+  isActive    Boolean
+  level       user_level
+  oauthTokens user_oauth[]
+}
+
+model user_oauth {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  provider     String   @db.VarChar(50)
+  accessToken  String   @db.VarChar(300)
+  refreshToken String   @db.VarChar(300)
+  userId       Int
+  user         users    @relation(fields: [userId], references: [id])
+
+}
+
+model members {
+  id                  Int                    @id @default(autoincrement())
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  firstName           String                 @db.VarChar(255)
+  lastName            String                 @db.VarChar(255)
+  nickName            String                 @db.VarChar(255)
+  isActive            Boolean
+  email               String                 @db.VarChar(255)
+  personalCode        String                 @db.VarChar(100)
+  bornDate            DateTime
+  telegramUserId      String                 @db.VarChar(300)
+  medicalCertificates medical_certificates[]
+  memberships         memberships[]
+  meetingsPresences   meeting_presences[]
+
+}
+
+model meetings {
+  id        Int                 @id @default(autoincrement())
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  name      String              @db.VarChar(255)
+  date      DateTime
+  presences meeting_presences[]
+}
+
+model meeting_presences {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  meetingId Int
+  members   members  @relation(fields: [userId], references: [id])
+  meeting   meetings @relation(fields: [meetingId], references: [id])
+}
+
+model medical_certificates {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isValid     Boolean
+  insertAt    DateTime
+  expireAt    DateTime
+  isAgonistic Boolean
+  memberId    Int
+  member      members  @relation(fields: [memberId], references: [id])
+}
+
+model memberships {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  insertAt  DateTime
+  expireAt  DateTime
+  memberId  Int
+  member    members  @relation(fields: [memberId], references: [id])
+}
